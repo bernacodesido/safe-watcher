@@ -30,11 +30,19 @@ export const Schema = z.object({
   /**
    * Telegram bot token
    */
-  telegramBotToken: z.string(),
+  telegramBotToken: z.optional(z.string()),
   /**
    * Telegram channel ID
    */
-  telegramChannelId: z.string(),
+  telegramChannelId: z.optional(z.string()),
+  /**
+   * Slack bot token
+   */
+  slackBotToken: z.optional(z.string()),
+  /**
+   * Slack channel ID
+   */
+  slackChannelId: z.optional(z.string()),
   /**
    * Prefixed safe addresses to watch, e.g. `eth:0x11111`
    */
