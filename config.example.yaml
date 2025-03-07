@@ -3,7 +3,7 @@ telegramChannelId: "-1111"
 slackBotToken: "xxxx"
 slackChannelId: "C1111"
 safeAddresses:
-  - "eth:0x11111"
+  - "desc: eth:0x11111"
 signers:
   "0x22222": "alice"
   "0x33333": "bob"
