@@ -1,4 +1,5 @@
 import logger from "../logger.js";
+
 import { Notificator } from "./Notificator.js";
 import type { Event, INotifier } from "../types.js";
 
