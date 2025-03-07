@@ -24,6 +24,7 @@ interface SafeWatcherOptions {
 class SafeWatcher {
   readonly #prefix: string;
   readonly #safe: Address;
+  readonly #name: string;
   readonly #notificationSender?: INotificationSender;
   readonly #logger: Logger;
   readonly #api: ISafeAPI;
@@ -33,10 +34,11 @@ class SafeWatcher {
   #interval?: NodeJS.Timeout;
 
   constructor(opts: SafeWatcherOptions) {
-    const [prefix, address] = parsePrefixedAddress(opts.safe);
+    const [prefix, address, name] = parsePrefixedAddress(opts.safe);
     this.#logger = logger.child({ chain: prefix, address });
     this.#prefix = prefix;
     this.#safe = address;
+    this.#name = name;
     this.#notificationSender = opts.notifier;
     this.#signers = opts.signers ?? {};
     this.#api = new SafeApiWrapper(opts.safe, opts.api);
@@ -123,20 +125,14 @@ class SafeWatcher {
       !MULTISEND_CALL_ONLY.has(detailed.to.toLowerCase() as Address) &&
       detailed.operation !== 0;
 
-    try {
-      await this.#notificationSender?.notify({
-        type: isMalicious ? "malicious" : "created",
-        chainPrefix: this.#prefix,
-        safe: this.#safe,
-        tx: detailed,
-        pending,
-      });
-    } catch (error) {
-      this.#logger?.error(
-        { txHash: tx.safeTxHash, error },
-        "failed to send notification",
-      );
-    }
+    await this.#notificationSender?.notify({
+      type: isMalicious ? "malicious" : "created",
+      name: this.#name,
+      chainPrefix: this.#prefix,
+      safe: this.#safe,
+      tx: detailed,
+      pending,
+    });
   }
 
   async #processTxUpdate(
@@ -160,6 +156,7 @@ class SafeWatcher {
 
     await this.#notificationSender?.notify({
       type: tx.isExecuted ? "executed" : "updated",
+      name: this.#name,
       chainPrefix: this.#prefix,
       safe: this.#safe,
       tx: detailed,
