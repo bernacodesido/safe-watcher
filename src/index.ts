@@ -10,17 +10,18 @@ async function run() {
   const config = await loadConfig();
 
   const sender = new NotificationSender();
+  // add Telegram notifier if configured
+  if (config.telegramBotTokenBotToken && config.telegramChannelIdl) {
+    await sender.addNotifier(new Telegram(config));
+    logger.info("Added notifier Telegram");
+  }
+
   await sender.addNotifier(new Telegram(config));
 
   // add Slack notifier if configured
-  if (config.slackWebhookUrl) {
-    await sender.addNotifier(
-      new Slack({
-        webhookUrl: config.slackWebhookUrl,
-        safeURL: config.safeURL,
-      }),
-    );
-    console.log("Added notifier");
+  if (config.slackBotToken && config.slackChannelIdl) {
+    await sender.addNotifier(new Slack(config));
+    logger.info("Added notifier Slack");
   }
 
   const safes = config.safeAddresses.map(async (safe, i) => {
